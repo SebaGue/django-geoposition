@@ -91,9 +91,44 @@ if (jQuery != undefined) {
                 gc.geocode({
                     'latLng': marker.position
                 }, function(results, status) {
+					if (status == 'OK') {
+						console.log(results)
+                        var addRes = results[0]['address_components'];
+                        for(var i=0;i<addRes.length;i++){
+                            switch(addRes[i].types[0]){
+                                case "postal_code":
+                                $('#id_zipcode').val(addRes[i].long_name)
+                                break;
+                                case "route":
+                                    $('#id_office_street').val(addRes[i].long_name)
+                                break;
+                                case "street_number":
+                                    $('#id_office_number').val(addRes[i].long_name)
+                                break;
+                                case "locality":
+                                    $('#id_office_city').val(addRes[i].long_name)
+                                break;
+                                case "administrative_area_level_2":
+                                    $('#id_office_state').val(addRes[i].short_name)
+                                break;
+                                case "country":
+                                    $('#id_office_country').val(addRes[i].long_name)
+                                break;
+                                default:
+                                    console.log(addRes[i].long_name)
+                                    console.log(addRes[i].types)
+                                break;
+
+                            }
+                        }
+                    }
+
+
+
                     $addressRow.text('');
                     if (results && results[0]) {
                         $addressRow.text(results[0].formatted_address);
+						
                     }
                 });
             }
@@ -148,6 +183,7 @@ if (jQuery != undefined) {
                 $latitudeField.val(this.position.lat());
                 $longitudeField.val(this.position.lng());
                 doGeocode();
+				
             });
             if ($latitudeField.val() && $longitudeField.val()) {
                 google.maps.event.trigger(marker, 'dragend');
